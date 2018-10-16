@@ -4,7 +4,22 @@ public class Main {
 
 
     public static void main(String[] args) {
-        System.out.println("hellooooooooo");
+
+
+        HashTable h = new HashTable();
+
+        int [] UPCcodes = Item.generateUPCCodes(99999);
+        System.out.println();
+
+        for (int upc : UPCcodes) {
+            System.out.println(upc + ",");
+            //put item in hashtable at correct index
+        }
+
+
+
+
+
     }
 
 }
