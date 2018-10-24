@@ -16,15 +16,13 @@ public class HashTable {
 
 
     public void put(Item item) {
-        //lock.writeLock().lock();
-        HashTable h = this;
+        lock.writeLock().lock();
 
-
-        if (itemCount.get() > 0.6f * h.getItems().length) {
-            h = h.resize();
+        if (itemCount.get() > (0.6f * items.length)) {
+            resize();
         }
 
-        int index = item.hash(h);
+        int index = item.hash() & (items.length-1) ;
 
         if (this.items[index] == null) {
             itemCount.compareAndSet(itemCount.get(), itemCount.get()+1);
@@ -35,31 +33,42 @@ public class HashTable {
             items[index].addToEnd(item);
         }
 
-        //lock.writeLock().unlock();
+        lock.writeLock().unlock();
     }
 
-    public HashTable resize(){
-        HashTable newHashTable = new HashTable(this.items.length *2);
-        Item[] tempStore = new Item[itemCount.get()];
-        int spot=0;
-        for (int i=0; i<this.getItems().length; i++) {
-            if (this.getItems()[i] != null) {
-                Item temp = this.getItems()[i];
-                tempStore[spot] = temp;
-                spot++;
+    public void resize(){
+        Item [] newBuckets = new Item[items.length *2];
+        Item [] oldBuckets = this.items;
+
+        for (int i=0; i<oldBuckets.length; i++) {
+            if (oldBuckets[i] != null) {
+                // temp is used as a seeker node, while current is used to be added simpy because its easier to remove
+                //next pointer that way
+
+                Item temp = oldBuckets[i];
+                Item current = new Item (temp.getUpcCode(), temp.getDescription(), temp.getPrice());
+                int index = current.hash() & (newBuckets.length-1);
+
+                if (newBuckets[index] == null) {
+                    newBuckets[index] = current;
+                } else {
+                    newBuckets[index].addToEnd(current);
+                }
+
                 while (temp.getNext() != null) {
                     temp = temp.getNext();
-                    tempStore[spot] = temp;
-                    spot++;
+                    current = new Item (temp.getUpcCode(), temp.getDescription(), temp.getPrice());
+                    index = current.hash() & (newBuckets.length-1);
+
+                    if (newBuckets[index] == null) {
+                        newBuckets[index] = current;
+                    } else {
+                        newBuckets[index].addToEnd(current);
+                    }
                 }
             }
         }
-
-        for (Item item: tempStore) {
-            newHashTable.put(item);
-        }
-
-        return newHashTable;
+        setItems(newBuckets);
 
     }
 

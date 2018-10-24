@@ -22,24 +22,24 @@ public class Item {
 
 
     public void addToEnd(Item item){
+
         Item current = this;
         while(current.next != null) {
             current = current.next;
         }
-        current.setNext(item);
+
+        current.next = item;
     }
 
 
-    public int hash(HashTable ht){
-        int size = ht.getItems().length;
-
+    public int hash(){
         char [] upc = (this.upcCode + "").toCharArray();
         int hash = 7;
         for (int i =0; i<upc.length; i++) {
             hash = hash*137 + upc[(i)];
         }
 
-        return Math.abs(hash) & (size-1);
+        return Math.abs(hash) ;
     }
 
 

@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
 
 
-        HashTable ht = new HashTable(NUMPRODUCTS);
+        HashTable ht = new HashTable(4);
 
         int [] UPCcodes = Item.generateUPCCodes(NUMPRODUCTS);
         String [] JCPItems = Item.readJCPData(NUMPRODUCTS);
