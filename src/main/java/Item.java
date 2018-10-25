@@ -46,38 +46,35 @@ public class Item {
 
 
 
-    public static int[] generateUPCCodes(int size) {
-        int [] codes = new int[size];
-        ArrayList<Integer> codesList = new ArrayList<Integer>();
+    public static ArrayList<Integer> generateUPCCodes(int size) {
+        ArrayList<Integer> codes = new ArrayList<Integer>();
         Random r = new Random();
 
-        for (int i = 0; i<codes.length; i++) {
-            int code = r.nextInt(1000000);
-            if (!codesList.contains(code)) {
-                codesList.add(code);
-                codes[i] = code;
-            } else {
-                i--;
-            }
+        for (int i = 0; i<size; i++) {
+            int code = r.nextInt(100000000);
+            codes.add(code);
         }
         return codes;
     }
 
 
 
-    public static String[] readJCPData(int numItems) {
-        String [] items = new String[numItems];
+    public static ArrayList<String> readJCPData(int numItems) {
+        ArrayList<String> items = new ArrayList<String>();
         BufferedReader br;
 
         try {
             br = new BufferedReader(new FileReader(new File("jcpenneyItemsSales.csv")));
 
         for (int i=0; i<numItems; i++) {
-            items[i] = br.readLine();
-            if (items[i].startsWith("\"")) {
-                //filter out things that start with " because they often have commas in them
-                i--;
+            String product = br.readLine();
+
+            //get items that dont start with \
+            while (product.startsWith("\"")) {
+                product = br.readLine();
             }
+            items.add(product);
+
         }
 
         br.close();

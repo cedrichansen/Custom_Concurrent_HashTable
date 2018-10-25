@@ -101,25 +101,26 @@ public class HashTable {
 
 
 
-    public boolean changeItemPrice(int upc, float newPrice) {
+    public String changeItemPrice(int upc, float newPrice) {
         Item item = get(upc);
         lock.writeLock().lock();
 
         if (item == null) {
             lock.writeLock().unlock();
-            return false;
+            return null;
         }
 
+        float oldPrice = item.getPrice();
         //check to see if another thread has already changed the price of the item
         if (!item.setNewPrice(newPrice)) {
             System.out.println("Another seller has already changed the price of this item...");
             lock.writeLock().unlock();
-            return true;
+            return "Another seller already changed the price of this item";
         }
 
-        System.out.println("Item: " + item.toString() + "\nNow costs: " + newPrice);
+
         lock.writeLock().unlock();
-        return true;
+        return "\nItem: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice + "\n";
 
 
 

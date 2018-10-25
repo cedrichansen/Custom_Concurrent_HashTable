@@ -2,17 +2,18 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Shopper implements Runnable{
 
     private String shopperName;
-    private int [] availableUPCcodes;
+    private ArrayList<Integer> availableUPCcodes;
     private HashTable ht;
     private Random r;
 
 
-    Shopper (String name, int [] upcCodes, HashTable h) {
+    Shopper (String name, ArrayList<Integer> upcCodes, HashTable h) {
         shopperName = name;
         availableUPCcodes = upcCodes;
         ht = h;
@@ -22,10 +23,10 @@ public class Shopper implements Runnable{
 
     private void buyRandomItem(){
         //pick a random item and read it
-        int upc = availableUPCcodes[r.nextInt(availableUPCcodes.length)];
+        int upc = availableUPCcodes.get(r.nextInt(availableUPCcodes.size()));
         Item i = ht.get(upc);
         if (i != null) {
-            System.out.println(shopperName + " just purchased" + i.toString());
+            System.out.println(shopperName + " just purchased " + i.toString());
         } else {
             System.out.println(shopperName + " is currently browsing items ");
         }
@@ -58,6 +59,7 @@ public class Shopper implements Runnable{
                 Thread.sleep(r.nextInt(5000));
             } catch (InterruptedException e) {
                 System.out.println(shopperName + " has left the store");
+                break;
             }
 
             buyRandomItem();
