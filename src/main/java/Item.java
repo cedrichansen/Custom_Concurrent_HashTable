@@ -97,19 +97,18 @@ public class Item {
     }
 
 
-
-    //TODO: make it so that it only changes the price if the price has not already been changed. Maybe synchronize it?
-    public void setPrice(float newPrice) {
-        this.price = price;
+    public boolean setNewPrice(float newPrice) {
+        if (this.price == newPrice) {
+            return false;
+        }
+        this.price = newPrice;
+        return true;
     }
 
 
     public float getPrice() {
         return price;
     }
-
-
-
 
 
     public int getUpcCode() {

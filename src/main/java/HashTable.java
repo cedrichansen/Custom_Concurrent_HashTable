@@ -22,7 +22,7 @@ public class HashTable {
             resize();
         }
 
-        int index = item.hash() & (items.length-1) ;
+        int index = item.hash() & (items.length-1);
 
         if (this.items[index] == null) {
             itemCount.compareAndSet(itemCount.get(), itemCount.get()+1);
@@ -69,6 +69,59 @@ public class HashTable {
             }
         }
         setItems(newBuckets);
+
+    }
+
+    public Item get(int upcCode) {
+        lock.readLock().lock();
+        Item seeker = new Item (upcCode, null, -1);
+        int index = seeker.hash() & (items.length-1);
+
+        if (items[index] == null) {
+            lock.readLock().unlock();
+            return null;
+        } else if (items[index].getUpcCode() == upcCode){
+            lock.readLock().unlock();
+            return items[index];
+        } else {
+            seeker = items[index];
+            while (seeker.getNext() != null) {
+                seeker = seeker.getNext();
+                if (seeker.getUpcCode() == upcCode) {
+                    lock.readLock().unlock();
+                    return seeker;
+                }
+            }
+            //this should never be reachable, but here in case;
+            lock.readLock().unlock();
+            return null;
+        }
+
+    }
+
+
+
+    public boolean changeItemPrice(int upc, float newPrice) {
+        Item item = get(upc);
+        lock.writeLock().lock();
+
+        if (item == null) {
+            lock.writeLock().unlock();
+            return false;
+        }
+
+        //check to see if another thread has already changed the price of the item
+        if (!item.setNewPrice(newPrice)) {
+            System.out.println("Another seller has already changed the price of this item...");
+            lock.writeLock().unlock();
+            return true;
+        }
+
+        System.out.println("Item: " + item.toString() + "\nNow costs: " + newPrice);
+        lock.writeLock().unlock();
+        return true;
+
+
 
     }
 
