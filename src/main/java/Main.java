@@ -1,13 +1,15 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     //https://www.kaggle.com/rtatman/universal-product-code-database
 
-    static int NUMPRODUCTS = 1000;
-    static Scanner kb = new Scanner(System.in);
-
+    static int NUMPRODUCTS = 50;
 
     public static void main(String[] args) {
 
@@ -22,17 +24,38 @@ public class Main {
             System.out.println(temp.toString());
         }
 
+        letShoppersIn(UPCcodes, ht);
 
-
-
-        System.out.println("Type upc code to change price");
-        String upc = kb.nextLine();
-        System.out.println("Please type in the new price");
-        String newPrice = kb.nextLine();
-
-        ht.changeItemPrice(Integer.parseInt(upc), Float.parseFloat(newPrice));
-        System.out.println();
 
     }
+
+    public static void letShoppersIn(int [] UPCcodes, HashTable ht){
+        try {
+            int numThreads = Runtime.getRuntime().availableProcessors();
+            numThreads = (numThreads > 32) ? 32 : numThreads;
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+            for (int i = 0; i<numThreads; i++) {
+                Shopper temp = new Shopper(Shopper.getShopperName(i), UPCcodes, ht);
+                executor.execute(temp);
+            }
+
+
+            //let shoppers shop for 30 seconds
+            executor.shutdown();
+            executor.awaitTermination(30 * 1000, TimeUnit.SECONDS);
+
+
+        } catch (InterruptedException e) {
+            System.out.println("process was interrupted...");
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+
 
 }
