@@ -47,7 +47,7 @@ public class Main {
             }
 
             //let shoppers shop for 15 seconds
-            executor.awaitTermination(15, TimeUnit.SECONDS);
+            executor.awaitTermination(360, TimeUnit.SECONDS);
             executor.shutdownNow();
             System.out.println("\nStore is now closed!");
 

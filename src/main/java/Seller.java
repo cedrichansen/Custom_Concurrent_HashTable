@@ -21,15 +21,23 @@ public class Seller implements Runnable{
 
     public void run() {
         while (true) {
+            int time = r.nextInt(5000);
             try {
                 //basically try to buy things between 0-5 seconds randomly
-                Thread.sleep(r.nextInt(5000));
+                Thread.sleep(time);
             } catch (InterruptedException e) {
                 System.out.println(storeName + " is now bankrupt! It can no longer change prices");
                 break;
             }
 
-            changeRandomItemPrice();
+            if (time > 2500) {
+                changeRandomItemPrice();
+            }
+            //TODO create a function that adds a new Item to the lists/hashtable
+
+
+
+
 
         }
     }
@@ -62,25 +70,6 @@ public class Seller implements Runnable{
         return null;
     }
 
-
-    static String gettStoreName(int shopperNum) {
-        try{
-            BufferedReader br = new BufferedReader(new FileReader("stores.csv"));
-            int i = 0;
-            String name;
-            for (name = br.readLine(); name != null; name = br.readLine()) {
-                if (i == shopperNum) {
-                    return name;
-                }
-                i++;
-            }
-        } catch (IOException e) {
-            System.out.println("File not found....");
-            e.printStackTrace();
-            return null;
-        }
-        return null;
-    }
 
 
 
