@@ -33,6 +33,8 @@ public class HashTable {
             items[index].addToEnd(item);
         }
 
+        System.out.println("Successfully added: " + item.toString());
+
         lock.writeLock().unlock();
     }
 
@@ -120,11 +122,10 @@ public class HashTable {
 
 
         lock.writeLock().unlock();
-        return "\nItem: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice + "\n";
-
-
+        return "Item: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice;
 
     }
+
 
 
 

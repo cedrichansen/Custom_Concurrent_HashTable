@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -59,25 +58,33 @@ public class Item {
 
 
 
-    public static ArrayList<String> readJCPData(int numItems) {
+
+    public String toString(){
+        return "UPC Code: " + this.upcCode + " -- Price: " + this.price + " -- Product: " + this.description;
+
+    }
+
+
+
+    public static ArrayList<String> readJCPData() {
         ArrayList<String> items = new ArrayList<String>();
         BufferedReader br;
 
         try {
             br = new BufferedReader(new FileReader(new File("jcpenneyItemsSales.csv")));
 
-        for (int i=0; i<numItems; i++) {
-            String product = br.readLine();
+            for (int i=0; i<8000; i++) {
+                String product = br.readLine();
 
-            //get items that dont start with \
-            while (product.startsWith("\"")) {
-                product = br.readLine();
+                //get items that dont start with \
+                while (product.startsWith("\"")) {
+                    product = br.readLine();
+                }
+                items.add(product);
+
             }
-            items.add(product);
 
-        }
-
-        br.close();
+            br.close();
 
         } catch (IOException e ) {
             System.out.println("The file does not exist!");
@@ -85,12 +92,6 @@ public class Item {
         }
 
         return items;
-    }
-
-
-    public String toString(){
-        return "UPC Code: " + this.upcCode + " -- Price: " + this.price + " -- Product: " + this.description;
-
     }
 
 

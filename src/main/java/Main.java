@@ -10,27 +10,27 @@ public class Main {
     //https://www.kaggle.com/rtatman/universal-product-code-database
 
     static int NUMPRODUCTS = 16; //do not exceed 8000 (only 8000 items in total)
-    static int  NUMSELLERS = 1; //do not exceed 12 (only 12 stores listed in text file)
+    static int  NUMSELLERS = 2; //do not exceed 12 (only 12 stores listed in text file
 
     public static void main(String[] args) {
 
         HashTable ht = new HashTable(4);
 
-        ArrayList<Integer> UPCcodes = Item.generateUPCCodes(NUMPRODUCTS);
-        ArrayList<String> JCPItems = Item.readJCPData(NUMPRODUCTS);
+        ArrayList<String> JCPItems = Item.readJCPData();
 
-        for (int i = 0; i< JCPItems.size(); i++) {
+        ArrayList<Integer> UPCcodes = Item.generateUPCCodes(NUMPRODUCTS);
+
+        for (int i = 0; i< NUMPRODUCTS; i++) {
             Item temp = new Item(UPCcodes.get(i), JCPItems.get(i).split(",")[0], Float.parseFloat(JCPItems.get(i).split(",")[1]));
             ht.put(temp);
-            System.out.println(temp.toString());
         }
 
-        letShoppersIn(UPCcodes, ht);
+        letShoppersIn(UPCcodes, JCPItems, ht);
 
 
     }
 
-    public static void letShoppersIn(ArrayList<Integer> UPCcodes, HashTable ht){
+    public static void letShoppersIn(ArrayList<Integer> UPCcodes, ArrayList<String> JCPItems, HashTable ht){
         try {
             int numThreads = Runtime.getRuntime().availableProcessors();
             numThreads = (numThreads > 32) ? 32 : numThreads;
@@ -42,14 +42,14 @@ public class Main {
             }
 
             for (int i = 0; i < NUMSELLERS; i++) {
-                Seller temp = new Seller(Seller.getSellerName(i), UPCcodes, ht);
+                Seller temp = new Seller(Seller.getSellerName(i), UPCcodes, JCPItems,  ht);
                 executor.execute(temp);
             }
 
-            //let shoppers shop for 15 seconds
+            //let shoppers shop for 360 seconds
             executor.awaitTermination(360, TimeUnit.SECONDS);
             executor.shutdownNow();
-            System.out.println("\nStore is now closed!");
+            System.out.println("\nStores are now closed!");
 
         } catch (InterruptedException e) {
             System.out.println("process was interrupted...");

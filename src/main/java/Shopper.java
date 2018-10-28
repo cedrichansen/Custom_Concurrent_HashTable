@@ -26,7 +26,7 @@ public class Shopper implements Runnable{
         int upc = availableUPCcodes.get(r.nextInt(availableUPCcodes.size()));
         Item i = ht.get(upc);
         if (i != null) {
-            System.out.println(shopperName + " just purchased " + i.toString());
+            System.out.println("        " +shopperName + " just purchased " + i.toString());
         } else {
             System.out.println(shopperName + " is currently browsing items ");
         }
@@ -55,7 +55,6 @@ public class Shopper implements Runnable{
     public void run() {
         while (true) {
             try {
-                //basically try to buy things between 0-5 seconds randomly
                 Thread.sleep(r.nextInt(5000));
             } catch (InterruptedException e) {
                 System.out.println(shopperName + " has left the store");
