@@ -1,3 +1,7 @@
+package CustomHashTable;
+
+import SuperMarket.Item;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -122,7 +126,7 @@ public class HashTable {
 
 
         lock.writeLock().unlock();
-        return "Item: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice;
+        return "Default.Item: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice;
 
     }
 

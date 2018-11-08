@@ -1,5 +1,8 @@
+package SuperMarket;
+
+import CustomHashTable.HashTable;
+
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ public class Shopper implements Runnable{
     private Random r;
 
 
-    Shopper (String name, ArrayList<Integer> upcCodes, HashTable h) {
+    public Shopper (String name, ArrayList<Integer> upcCodes, HashTable h) {
         shopperName = name;
         availableUPCcodes = upcCodes;
         ht = h;
@@ -21,7 +24,7 @@ public class Shopper implements Runnable{
     }
 
 
-    private void buyRandomItem(){
+    public void buyRandomItem(){
         //pick a random item and read it
         int upc = availableUPCcodes.get(r.nextInt(availableUPCcodes.size()));
         Item i = ht.get(upc);
@@ -32,7 +35,7 @@ public class Shopper implements Runnable{
         }
     }
 
-    static String getShopperName(int shopperNum) {
+    public static String getShopperName(int shopperNum) {
         try{
             BufferedReader br = new BufferedReader(new FileReader("names.csv"));
             int i = 0;
@@ -53,17 +56,19 @@ public class Shopper implements Runnable{
 
 
     public void run() {
-        while (true) {
-            try {
-                Thread.sleep(r.nextInt(5000));
-            } catch (InterruptedException e) {
-                System.out.println(shopperName + " has left the store");
-                break;
-            }
+//        while (true) {
+//            try {
+//                Thread.sleep(r.nextInt(5000));
+//            } catch (InterruptedException e) {
+//                System.out.println(shopperName + " has left the store");
+//                break;
+//            }
+//
+//            buyRandomItem();
+//
+//        }
 
-            buyRandomItem();
-
-        }
+        buyRandomItem();
     }
 
 

@@ -1,8 +1,11 @@
+package SuperMarket;
+
+import CustomHashTable.HashTable;
+import CustomHashTable.Main;
+
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,39 +19,46 @@ public class Seller implements Runnable{
     private Random r;
 
 
-    static int numItems = Main.NUMPRODUCTS;
+    static int numItems;
     static ReentrantLock counterLock = new ReentrantLock(true);
 
 
-    public Seller (String name, ArrayList<Integer> upcCodes,ArrayList<String> items,  HashTable h) {
+    public Seller (String name, ArrayList<Integer> upcCodes,ArrayList<String> items,  HashTable h, int nItems) {
         storeName = name;
         availableUPCcodes = upcCodes;
         availableItems = items;
         ht = h;
         r = new Random();
+        numItems = nItems;
     }
 
     public void run() {
-        while (true) {
-            int time = r.nextInt(5000);
-            try {
-                //basically try to buy things between 0-5 seconds randomly
-                Thread.sleep(time);
+//        while (true) {
+//            int time = r.nextInt(5000);
+//            try {
+//                //basically try to buy things between 0-5 seconds randomly
+//                Thread.sleep(time);
+//
+//                if (time > 2500) {
+//                    addItem(availableUPCcodes, availableItems);
+//                } else {
+//                    changeRandomItemPrice();
+//                    addItem(availableUPCcodes, availableItems);
+//                }
+//            } catch (InterruptedException e) {
+//                System.out.println(storeName + " is now closed! It can no longer change prices");
+//                break;
+//            }
+//
+//
+//
+//        }
 
-                if (time > 2500) {
-                    addItem(availableUPCcodes, availableItems);
-                } else {
-                    changeRandomItemPrice();
-                    addItem(availableUPCcodes, availableItems);
-                }
-            } catch (InterruptedException e) {
-                System.out.println(storeName + " is now closed! It can no longer change prices");
-                break;
-            }
+        changeRandomItemPrice();
 
 
+        addItem(availableUPCcodes, availableItems);
 
-        }
     }
     static void incrementCounter(){
         counterLock.lock();
@@ -65,7 +75,7 @@ public class Seller implements Runnable{
     public void changeRandomItemPrice() {
         int upc = availableUPCcodes.get(r.nextInt(availableUPCcodes.size()));
         float newPrice = r.nextFloat() * 300;
-        System.out.println(ht.changeItemPrice(upc, newPrice));
+        System.out.println(this.storeName + " " + ht.changeItemPrice(upc, newPrice));
     }
 
 
