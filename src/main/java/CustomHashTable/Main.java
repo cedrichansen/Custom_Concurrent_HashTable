@@ -30,7 +30,7 @@ public class Main {
         //java.util.Hashtable table = new Hashtable();
 
         ArrayList<String> JCPItems = Item.readJCPData();
-        ArrayList<Integer> UPCcodes = Item.generateUPCCodes(1000000);
+        ArrayList<Integer> UPCcodes = Item.generateUPCCodes(JCPItems.size());
 
         for (int i = 0; i< NUMPRODUCTS; i++) {
             Item temp = new Item(UPCcodes.get(i), JCPItems.get(i).split(",")[0], Float.parseFloat(JCPItems.get(i).split(",")[1]));
@@ -73,12 +73,12 @@ public class Main {
             }
 
             for (int i = 0; i < NUMSELLERS; i++) {
-                Seller temp = new Seller(Seller.getSellerName(i), UPCcodes, JCPItems,  ht, NUMPRODUCTS);
+                Seller temp = new Seller(Seller.getSellerName(i), UPCcodes, JCPItems,  ht);
                 executor.execute(temp);
             }
 
             //let shoppers shop for 360 seconds
-            executor.awaitTermination(30, TimeUnit.SECONDS);
+            executor.awaitTermination(360, TimeUnit.SECONDS);
             executor.shutdownNow();
             System.out.println("\nStores are now closed!");
 

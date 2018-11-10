@@ -26,7 +26,7 @@ public class Shopper implements Runnable{
 
     public void buyRandomItem(){
         //pick a random item and read it
-        int upc = availableUPCcodes.get(r.nextInt(availableUPCcodes.size()));
+        int upc = availableUPCcodes.get(r.nextInt(ht.getItemCount().get()));
         Item i = ht.get(upc);
         if (i != null) {
             System.out.println("        " +shopperName + " just purchased " + i.toString());
@@ -58,7 +58,7 @@ public class Shopper implements Runnable{
     public void run() {
 //        while (true) {
 //            try {
-//                Thread.sleep(r.nextInt(5000));
+//                Thread.sleep(r.nextInt(50));
 //            } catch (InterruptedException e) {
 //                System.out.println(shopperName + " has left the store");
 //                break;
@@ -68,7 +68,7 @@ public class Shopper implements Runnable{
 //
 //        }
 
-        buyRandomItem();
+       buyRandomItem();
     }
 
 

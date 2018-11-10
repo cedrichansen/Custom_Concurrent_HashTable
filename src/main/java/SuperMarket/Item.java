@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Item {
 
@@ -13,23 +15,26 @@ public class Item {
     private final String description;
     private float price;
     private Item next;
+    final public ReadWriteLock lock;
 
     public Item(int upcCode, String description, float price) {
         this.upcCode = upcCode;
         this.description = description;
         this.price = price;
+        lock = new ReentrantReadWriteLock();
     }
 
 
 
     public void addToEnd(Item item){
-
+        lock.writeLock().lock();
         Item current = this;
         while(current.next != null) {
             current = current.next;
         }
 
         current.next = item;
+        lock.writeLock().unlock();
     }
 
 
@@ -52,7 +57,7 @@ public class Item {
         Random r = new Random();
 
         for (int i = 0; i<size; i++) {
-            int code = r.nextInt(100000000);
+            int code = r.nextInt(999999999);
             codes.add(code);
         }
         return codes;

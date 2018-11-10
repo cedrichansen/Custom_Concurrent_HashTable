@@ -23,7 +23,7 @@ public class Benchmark {
     static HashTable ht = new HashTable(4);
 
     static ArrayList<String> JCPItems = Item.readJCPData();
-    static ArrayList<Integer> UPCcodes = Item.generateUPCCodes(NUMPRODUCTS);
+    static ArrayList<Integer> UPCcodes = Item.generateUPCCodes(JCPItems.size());
     static ArrayList <Shopper> shoppers = createShoppers();
     static ArrayList<Seller> sellers = createSellers();
 
@@ -36,6 +36,7 @@ public class Benchmark {
         }
     }
 
+    /*
     @TearDown(Level.Iteration)
     public void tearDown() {
         ht = new HashTable(4);
@@ -43,18 +44,22 @@ public class Benchmark {
             Item temp = new Item(UPCcodes.get(i), JCPItems.get(i).split(",")[0], Float.parseFloat(JCPItems.get(i).split(",")[1]));
             ht.put(temp);
         }
-    }
+    }*/
 
     @org.openjdk.jmh.annotations.Benchmark
     @BenchmarkMode(Mode.All)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void testGet(Blackhole bh) {
 
-        ExecutorService executor = Executors.newFixedThreadPool(shoppers.size());
-        for (Shopper s : shoppers) {
-            executor.execute(s);
-        }
-        executor.shutdown();
+            ExecutorService executor = Executors.newFixedThreadPool(shoppers.size());
+            for (Shopper s : shoppers) {
+                executor.execute(s);
+                executor.execute(s);
+                executor.execute(s);
+            }
+            executor.shutdown();
+
+
 
     }
 
@@ -63,11 +68,16 @@ public class Benchmark {
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     //@OutputTimeUnit()
     public void testAdd(Blackhole bh) {
-        ExecutorService executor = Executors.newFixedThreadPool(shoppers.size());
-        for (Seller s : sellers) {
-            executor.execute(s);
-        }
-        executor.shutdown();
+
+            ExecutorService executor = Executors.newFixedThreadPool(shoppers.size());
+            for (Seller s : sellers) {
+                executor.execute(s);
+                executor.execute(s);
+                executor.execute(s);
+            }
+            executor.shutdown();
+
+
     }
 
 
@@ -77,7 +87,7 @@ public class Benchmark {
 
         for (int i = 0; i<NUMSELLERS; i++) {
             String name = Seller.getSellerName(i);
-            Seller temp = new Seller(name , UPCcodes, JCPItems,ht, Main.NUMPRODUCTS);
+            final Seller temp = new Seller(name , UPCcodes, JCPItems,ht);
             sellers.add(temp);
         }
         return sellers;
@@ -89,7 +99,7 @@ public class Benchmark {
         ArrayList <Shopper> shoppers = new ArrayList<Shopper>();
 
         for (int i = 0; i<numThreads- NUMSELLERS; i++) {
-            Shopper temp = new Shopper(Shopper.getShopperName(i), UPCcodes, ht);
+            final Shopper temp = new Shopper(Shopper.getShopperName(i), UPCcodes, ht);
             shoppers.add(temp);
         }
         return shoppers;

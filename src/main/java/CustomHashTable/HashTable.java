@@ -2,6 +2,7 @@ package CustomHashTable;
 
 import SuperMarket.Item;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -10,39 +11,49 @@ public class HashTable {
 
     private Item[] items;
     private AtomicInteger itemCount;
-    private ReadWriteLock lock;
+    //private ReadWriteLock lock;
+    private AtomicBoolean isResizing = new AtomicBoolean(false);
 
     public HashTable(int size){
         items = new Item[size];
         itemCount = new AtomicInteger(0);
-        lock = new ReentrantReadWriteLock();
     }
 
 
     public void put(Item item) {
-        lock.writeLock().lock();
 
-        if (itemCount.get() > (0.6f * items.length)) {
+        if (itemCount.get() > (0.75f * items.length)) {
+            isResizing.getAndSet(true);
             resize();
+            isResizing.getAndSet(false);
         }
 
-        int index = item.hash() & (items.length-1);
 
-        if (this.items[index] == null) {
-            itemCount.compareAndSet(itemCount.get(), itemCount.get()+1);
-            items[index] = item;
-        } else {
-            //something must be there so add it to be the next item
-            itemCount.compareAndSet(itemCount.get(), itemCount.get() + 1);
-            items[index].addToEnd(item);
+        for (;;){
+            if (!isResizing.get()) {
+                int index = item.hash() & (items.length-1);
+                Item current = items[index];
+
+                if (current == null) {
+                    itemCount.compareAndSet(itemCount.get(), itemCount.get()+1);
+                    items[index] = item;
+                    System.out.println("Successfully added: " + item.toString());
+
+                    break;
+                } else {
+                    itemCount.compareAndSet(itemCount.get(), itemCount.get() + 1);
+                    System.out.println("Successfully added: " + item.toString());
+                    current.addToEnd(item);
+                    break;
+                }
+
+            }
         }
 
-        System.out.println("Successfully added: " + item.toString());
-
-        lock.writeLock().unlock();
     }
 
     public void resize(){
+
         Item [] newBuckets = new Item[items.length *2];
         Item [] oldBuckets = this.items;
 
@@ -75,32 +86,34 @@ public class HashTable {
             }
         }
         setItems(newBuckets);
-
     }
 
     public Item get(int upcCode) {
-        lock.readLock().lock();
-        Item seeker = new Item (upcCode, null, -1);
-        int index = seeker.hash() & (items.length-1);
+        //lock.readLock().lock();
+        for (;;){
+            if (!isResizing.get()) {
 
-        if (items[index] == null) {
-            lock.readLock().unlock();
-            return null;
-        } else if (items[index].getUpcCode() == upcCode){
-            lock.readLock().unlock();
-            return items[index];
-        } else {
-            seeker = items[index];
-            while (seeker.getNext() != null) {
-                seeker = seeker.getNext();
-                if (seeker.getUpcCode() == upcCode) {
-                    lock.readLock().unlock();
-                    return seeker;
+                Item seeker = new Item(upcCode, null, -1);
+
+                int index = seeker.hash() & (items.length - 1);
+                Item current = items[index];
+
+                if (current == null) {
+                    return null;
+                } else if (current.getUpcCode() == upcCode) {
+                    return current;
+                } else {
+                    seeker = current;
+                    while (seeker.getNext() != null) {
+                        seeker = seeker.getNext();
+                        if (seeker.getUpcCode() == upcCode) {
+                            return seeker;
+                        }
+                    }
+                    //this should never be reachable, but here in case;
+                    return null;
                 }
             }
-            //this should never be reachable, but here in case;
-            lock.readLock().unlock();
-            return null;
         }
 
     }
@@ -109,10 +122,8 @@ public class HashTable {
 
     public String changeItemPrice(int upc, float newPrice) {
         Item item = get(upc);
-        lock.writeLock().lock();
 
         if (item == null) {
-            lock.writeLock().unlock();
             return null;
         }
 
@@ -120,13 +131,11 @@ public class HashTable {
         //check to see if another thread has already changed the price of the item
         if (!item.setNewPrice(newPrice)) {
             System.out.println("Another seller has already changed the price of this item...");
-            lock.writeLock().unlock();
             return "Another seller already changed the price of this item";
         }
 
 
-        lock.writeLock().unlock();
-        return "Default.Item: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice;
+        return "Item: " + item.getUpcCode() + " -- " + item.getDescription() + "\nUsed to cost: " + oldPrice + " Now costs: " + newPrice;
 
     }
 
@@ -149,6 +158,7 @@ public class HashTable {
     public void setItemCount(AtomicInteger itemCount) {
         this.itemCount = itemCount;
     }
+
 
 
 

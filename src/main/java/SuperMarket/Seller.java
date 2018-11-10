@@ -18,75 +18,68 @@ public class Seller implements Runnable{
     private HashTable ht;
     private Random r;
 
-
-    static int numItems;
     static ReentrantLock counterLock = new ReentrantLock(true);
 
 
-    public Seller (String name, ArrayList<Integer> upcCodes,ArrayList<String> items,  HashTable h, int nItems) {
+    public Seller (String name, ArrayList<Integer> upcCodes,ArrayList<String> items,  HashTable h) {
         storeName = name;
         availableUPCcodes = upcCodes;
         availableItems = items;
         ht = h;
         r = new Random();
-        numItems = nItems;
     }
 
     public void run() {
 //        while (true) {
-//            int time = r.nextInt(5000);
+//            int time = r.nextInt(50);
 //            try {
-//                //basically try to buy things between 0-5 seconds randomly
 //                Thread.sleep(time);
-//
-//                if (time > 2500) {
-//                    addItem(availableUPCcodes, availableItems);
-//                } else {
-//                    changeRandomItemPrice();
+//                changeRandomItemPrice();
+//                if (ht.getItemCount().get() < 7999 && time < 5) {
 //                    addItem(availableUPCcodes, availableItems);
 //                }
+//
 //            } catch (InterruptedException e) {
 //                System.out.println(storeName + " is now closed! It can no longer change prices");
 //                break;
 //            }
-//
-//
 //
 //        }
 
         changeRandomItemPrice();
 
 
-        addItem(availableUPCcodes, availableItems);
-
-    }
-    static void incrementCounter(){
-        counterLock.lock();
-
-        // Always good practice to enclose locks in a try-finally block
-        try{
-            numItems++;
-        }finally{
-            counterLock.unlock();
+        if (ht.getItemCount().get() < 7999) {
+            addItem(availableUPCcodes, availableItems);
         }
+
+
     }
+
 
 
     public void changeRandomItemPrice() {
-        int upc = availableUPCcodes.get(r.nextInt(availableUPCcodes.size()));
+        int index = r.nextInt(ht.getItemCount().get());
+        int upc = availableUPCcodes.get(index);
         float newPrice = r.nextFloat() * 300;
         System.out.println(this.storeName + " " + ht.changeItemPrice(upc, newPrice));
     }
 
 
-    public synchronized void addItem(ArrayList<Integer> currentUpcCodes, ArrayList<String> availableItems) {
+    public void addItem(ArrayList<Integer> currentUpcCodes, ArrayList<String> availableItems) {
 
-        String [] itemStuff = availableItems.get(numItems).split(",");
-        int upc = Item.generateUPCCodes(1).get(0);
+        String [] itemStuff = availableItems.get(ht.getItemCount().get()).split(",");
+        int upc = 0;
+        try {
+            int index = ht.getItemCount().get()-1;
+            upc = availableUPCcodes.get(index);
+
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("something went wrong");
+            e.printStackTrace();
+        }
         Item i = new Item(upc, itemStuff[0], Float.parseFloat(itemStuff[1]));
         ht.put(i);
-        currentUpcCodes.add(upc);
-        incrementCounter();
     }
 
 
