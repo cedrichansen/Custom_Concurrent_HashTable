@@ -47,8 +47,8 @@ public class Benchmark {
     }*/
 
     @org.openjdk.jmh.annotations.Benchmark
-    @BenchmarkMode(Mode.All)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void testGet(Blackhole bh) {
 
             ExecutorService executor = Executors.newFixedThreadPool(shoppers.size());
@@ -64,8 +64,8 @@ public class Benchmark {
     }
 
     @org.openjdk.jmh.annotations.Benchmark
-    @BenchmarkMode(Mode.All)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
     //@OutputTimeUnit()
     public void testAdd(Blackhole bh) {
 

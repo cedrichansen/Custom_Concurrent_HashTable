@@ -62,14 +62,22 @@ public class Main {
 
 
         try {
-
-            ArrayList<RunResult> results = new ArrayList<RunResult>(new Runner(options).run());
+            new Runner(options).run();
         } catch (RunnerException e) {
             e.printStackTrace();
         }
 
 
     }
+
+
+
+    public static void writeHTMLFile(){
+
+    }
+
+
+
 
     public static void letShoppersIn(ArrayList<Integer> UPCcodes, ArrayList<String> JCPItems, HashTable ht) {
         try {
