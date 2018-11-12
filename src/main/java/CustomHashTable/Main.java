@@ -3,9 +3,10 @@ package CustomHashTable;
 import SuperMarket.Item;
 import SuperMarket.Seller;
 import SuperMarket.Shopper;
+import javafx.beans.property.IntegerProperty;
 import org.openjdk.jmh.annotations.Benchmark;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
@@ -61,20 +62,147 @@ public class Main {
                 .build();
 
 
-        try {
-            new Runner(options).run();
-        } catch (RunnerException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            new Runner(options).run();
+//        } catch (RunnerException e) {
+//            e.printStackTrace();
+//        }
 
+
+        writeHTMLFile();
 
     }
 
 
 
     public static void writeHTMLFile(){
+        String total = "";
+
+        String start = "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>csc375hw02 results</title>\n" +
+                "\n" +
+                "    <link rel=\"stylesheet\" href=\"results.css\">\n" +
+                "\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "\n" +
+                "<h1>title 1</h1>";
+
+        String end = "\n" +
+                "</body>\n" +
+                "</html>";
+
+        total += start;
+
+
+        String barGraphStart = "<div>\n" +
+                "\n" +
+                "    <ul class=\"bar-graph\">\n" +
+                "\n" +
+                "\n" +
+                "        <li class=\"bar-graph-axis\">";
+
+        total += barGraphStart;
+
+        String barGraphEnd = "</ul>\n" +
+                "\n" +
+                "</div>";
+
+        String barGraphAxisStart = "<div class=\"bar-graph-label\">";
+
+
+        String barGraphAxisEnd = "</div>\n";
+
+        File f = new File("results.csv");
+        ArrayList<String> lines = new ArrayList<String>();
+        try {
+
+            BufferedReader br = new BufferedReader(new FileReader(f));
+            String line = br.readLine();
+
+            int count = 0;
+            while (line != null) {
+                if (count != 0) {
+                    lines.add(line);
+                }
+                count++;
+                line=br.readLine();
+            }
+
+
+            br.close();
+
+
+            ArrayList<Double> scores = new ArrayList<Double>();
+            Double maxScore = 0d;
+
+            for (String s : lines) {
+                    Double score = Double.parseDouble(s.split(",")[4]);
+                    if (score>maxScore) {
+                        maxScore = score;
+                    }
+                    scores.add(score);
+            }
+
+            double top = Math.ceil(maxScore);
+            System.out.println(top);
+            double secondDiv = (top/5) *4;
+            double thirdDiv = (top/5) *3;
+            double fourthDiv = (top/5) *2;
+            double fifthDiv = (top/5) *1;
+
+            String firstAxisTitle = barGraphAxisStart + top + barGraphAxisEnd;
+            String secondAxisTitle = barGraphAxisStart + secondDiv + barGraphAxisEnd;
+            String thirdAxisTitle = barGraphAxisStart + thirdDiv + barGraphAxisEnd;
+            String fourthAxisTitle = barGraphAxisStart + fourthDiv + barGraphAxisEnd;
+            String fifthAxisTitle = barGraphAxisStart + fifthDiv + barGraphAxisEnd;
+            String zeroAxis = barGraphAxisStart + "0" + barGraphAxisEnd + "</li>";
+
+            total+=firstAxisTitle;
+            total +=secondAxisTitle;
+            total +=thirdAxisTitle;
+            total+=fourthAxisTitle;
+            total+=fifthAxisTitle;
+            total+=zeroAxis;
+
+
+            for (String l:lines) {
+                total += addBarToGraph(Double.parseDouble(l.split(",")[4]), l.split(",")[0], top);
+            }
+            total+= barGraphEnd;
+            total +=end;
+
+
+            f = new File("results.html");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+            bw.write(total);
+            bw.close();
+
+
+            System.out.println(total);
+        } catch (IOException e ) {
+            System.out.println("file doesnt exist");
+        }
+
 
     }
+
+    static String addBarToGraph (double value, String name, double max) {
+        String [] stuff = name.split("\\.");
+        name = stuff[2].substring(0, stuff[2].length()-1);
+        double perc = value/max;
+        String firstLine= "<li class=\"bar primary\" style=\"height: " + perc + "%;\" title =" + name + ">\n";
+        String secondLine = "<div class=\"percent\">" + value + "<span></span></div>\n";
+        String thirdLine = "<div class=\"description\">" + name + "</div>\n" +
+                "        </li>";
+
+        return firstLine + secondLine + thirdLine;
+
+    }
+
 
 
 
@@ -106,6 +234,9 @@ public class Main {
         }
 
     }
+
+
+
 
 
 }
