@@ -5,11 +5,16 @@ import SuperMarket.Seller;
 import SuperMarket.Shopper;
 import org.openjdk.jmh.annotations.Benchmark;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.openjdk.jmh.results.BenchmarkResult;
+import org.openjdk.jmh.results.RunResult;
+import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -22,7 +27,7 @@ public class Main {
     //https://www.kaggle.com/rtatman/universal-product-code-database
 
     public static int NUMPRODUCTS = 16; //do not exceed 8000 (only 8000 items in total)
-    static int  NUMSELLERS = 2; //do not exceed 12 (only 12 stores listed in text file
+    static int NUMSELLERS = 2; //do not exceed 12 (only 12 stores listed in text file
 
     public static void main(String[] args) {
 
@@ -32,7 +37,7 @@ public class Main {
         ArrayList<String> JCPItems = Item.readJCPData();
         ArrayList<Integer> UPCcodes = Item.generateUPCCodes(JCPItems.size());
 
-        for (int i = 0; i< NUMPRODUCTS; i++) {
+        for (int i = 0; i < NUMPRODUCTS; i++) {
             Item temp = new Item(UPCcodes.get(i), JCPItems.get(i).split(",")[0], Float.parseFloat(JCPItems.get(i).split(",")[1]));
             ht.put(temp);
             //table.put(temp.getUpcCode(), temp);
@@ -48,32 +53,37 @@ public class Main {
         final Options options = new OptionsBuilder()
                 .include(Benchmark.class.getSimpleName())
                 .forks(1)
+                .threads(4)
+                .warmupIterations(5)
+                .measurementIterations(5)
+                .resultFormat(ResultFormatType.CSV)
+                .result("results.csv")
                 .build();
 
 
         try {
-            new Runner(options).run();
+
+            ArrayList<RunResult> results = new ArrayList<RunResult>(new Runner(options).run());
         } catch (RunnerException e) {
             e.printStackTrace();
         }
 
 
-
     }
 
-    public static void letShoppersIn(ArrayList<Integer> UPCcodes, ArrayList<String> JCPItems, HashTable ht){
+    public static void letShoppersIn(ArrayList<Integer> UPCcodes, ArrayList<String> JCPItems, HashTable ht) {
         try {
             int numThreads = Runtime.getRuntime().availableProcessors();
             numThreads = (numThreads > 32) ? 32 : numThreads;
             ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-            for (int i = 0; i<numThreads- NUMSELLERS; i++) {
+            for (int i = 0; i < numThreads - NUMSELLERS; i++) {
                 Shopper temp = new Shopper(Shopper.getShopperName(i), UPCcodes, ht);
                 executor.execute(temp);
             }
 
             for (int i = 0; i < NUMSELLERS; i++) {
-                Seller temp = new Seller(Seller.getSellerName(i), UPCcodes, JCPItems,  ht);
+                Seller temp = new Seller(Seller.getSellerName(i), UPCcodes, JCPItems, ht);
                 executor.execute(temp);
             }
 
@@ -88,10 +98,6 @@ public class Main {
         }
 
     }
-
-
-
-
 
 
 }

@@ -14,7 +14,7 @@ public class HashTable {
     //private ReadWriteLock lock;
     private AtomicBoolean isResizing = new AtomicBoolean(false);
 
-    public HashTable(int size){
+    public HashTable(int size) {
         items = new Item[size];
         itemCount = new AtomicInteger(0);
     }
@@ -22,20 +22,24 @@ public class HashTable {
 
     public void put(Item item) {
 
-        if (itemCount.get() > (0.75f * items.length)) {
-            isResizing.getAndSet(true);
-            resize();
-            isResizing.getAndSet(false);
-        }
+        //keep trying until its not being resized
+        for (; ; ) {
 
-
-        for (;;){
             if (!isResizing.get()) {
-                int index = item.hash() & (items.length-1);
+                //if a resize is currently not happening
+
+                if (itemCount.get() > (0.75f * items.length)) {
+                    isResizing.getAndSet(true);
+                    resize();
+                    isResizing.getAndSet(false);
+                }
+
+
+                int index = item.hash() & (items.length - 1);
                 Item current = items[index];
 
                 if (current == null) {
-                    itemCount.compareAndSet(itemCount.get(), itemCount.get()+1);
+                    itemCount.compareAndSet(itemCount.get(), itemCount.get() + 1);
                     items[index] = item;
                     System.out.println("Successfully added: " + item.toString());
 
@@ -52,19 +56,19 @@ public class HashTable {
 
     }
 
-    public void resize(){
+    public void resize() {
 
-        Item [] newBuckets = new Item[items.length *2];
-        Item [] oldBuckets = this.items;
+        Item[] newBuckets = new Item[items.length * 2];
+        Item[] oldBuckets = this.items;
 
-        for (int i=0; i<oldBuckets.length; i++) {
+        for (int i = 0; i < oldBuckets.length; i++) {
             if (oldBuckets[i] != null) {
                 // temp is used as a seeker node, while current is used to be added simpy because its easier to remove
                 //next pointer that way
 
                 Item temp = oldBuckets[i];
-                Item current = new Item (temp.getUpcCode(), temp.getDescription(), temp.getPrice());
-                int index = current.hash() & (newBuckets.length-1);
+                Item current = new Item(temp.getUpcCode(), temp.getDescription(), temp.getPrice());
+                int index = current.hash() & (newBuckets.length - 1);
 
                 if (newBuckets[index] == null) {
                     newBuckets[index] = current;
@@ -74,8 +78,8 @@ public class HashTable {
 
                 while (temp.getNext() != null) {
                     temp = temp.getNext();
-                    current = new Item (temp.getUpcCode(), temp.getDescription(), temp.getPrice());
-                    index = current.hash() & (newBuckets.length-1);
+                    current = new Item(temp.getUpcCode(), temp.getDescription(), temp.getPrice());
+                    index = current.hash() & (newBuckets.length - 1);
 
                     if (newBuckets[index] == null) {
                         newBuckets[index] = current;
@@ -90,7 +94,7 @@ public class HashTable {
 
     public Item get(int upcCode) {
         //lock.readLock().lock();
-        for (;;){
+        for (; ; ) {
             if (!isResizing.get()) {
 
                 Item seeker = new Item(upcCode, null, -1);
@@ -119,7 +123,6 @@ public class HashTable {
     }
 
 
-
     public String changeItemPrice(int upc, float newPrice) {
         Item item = get(upc);
 
@@ -140,8 +143,6 @@ public class HashTable {
     }
 
 
-
-
     public Item[] getItems() {
         return items;
     }
@@ -158,8 +159,6 @@ public class HashTable {
     public void setItemCount(AtomicInteger itemCount) {
         this.itemCount = itemCount;
     }
-
-
 
 
 }
