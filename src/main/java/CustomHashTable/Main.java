@@ -194,7 +194,7 @@ public class Main {
         String [] stuff = name.split("\\.");
         name = stuff[2].substring(0, stuff[2].length()-1);
         double perc = value/max;
-        String firstLine= "<li class=\"bar primary\" style=\"height: " + perc + "%;\" title =" + name + ">\n";
+        String firstLine= "<li class=\"bar primary\" style=\"height: " + perc*100 + "%;\" title =" + name + ">\n";
         String secondLine = "<div class=\"percent\">" + value + "<span></span></div>\n";
         String thirdLine = "<div class=\"description\">" + name + "</div>\n" +
                 "        </li>";
