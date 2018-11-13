@@ -13,12 +13,12 @@
 
 .bar-graph li {
     display: block;
-    padding: 1.5625rem 0;
+    padding: 1.0rem 0;
     position: relative;
     text-align: center;
     vertical-align: bottom;
     border-radius: 4px 4px 0 0;
-    max-width: 20%;
+    max-width: 15%;
     height: 100%;
     margin: 0 1.8% 0 0;
     -webkit-flex: 1 1 15%;
@@ -74,7 +74,7 @@
 }
 
 .bar-graph .percent {
-    letter-spacing: -3px;
+    letter-spacing: 0px;
     opacity: 0.4;
     width: 100%;
     font-size: 1.875rem;
@@ -83,12 +83,12 @@
 
 @media print, screen and (min-width: 40em) {
     .bar-graph .percent {
-        font-size: 3.875rem;
+        font-size: 1.5rem;
     }
 }
 
 .bar-graph .percent span {
-    font-size: 1.875rem;
+    font-size: 1.25rem;
 }
 
 .bar-graph .description {

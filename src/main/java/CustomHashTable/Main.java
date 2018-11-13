@@ -30,7 +30,7 @@ public class Main {
 
     public static int NUMPRODUCTS = 16; //do not exceed 8000 (only 8000 items in total)
     static int NUMSELLERS = 2; //do not exceed 12 (only 12 stores listed in text file
-    static DecimalFormat df = new DecimalFormat("#.00");
+    static DecimalFormat df = new DecimalFormat("0.00");
 
     public static void main(String[] args) {
 
