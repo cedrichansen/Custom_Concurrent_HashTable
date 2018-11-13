@@ -91,7 +91,11 @@ public class Main {
                 "</head>\n" +
                 "<body>\n" +
                 "\n" +
-                "<h1>Test Results</h1>";
+                "<h1>Test Results</h1>\n" +
+                "<h4>TestAdd Custom: The ops/sec for my custom implementation of writing/modifying data in the Hashtable<h4>\n" +
+                "<h4>TestAdd JDK: The ops/sec for the  jdk implementation of writing/modifying data in the Hashtable</h4>\n" +
+                "<h4>TestGet Custom: The ops/sec for my custom implementation of reading a random item from the HT</h4>\n" +
+                "<h4>TestGet JDK: The ops/sec for the jdk implementation of reading random item from the HT</h4>";
 
         String end = "\n" +
                 "</body>\n" +
