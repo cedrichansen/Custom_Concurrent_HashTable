@@ -156,11 +156,11 @@ public class Main {
             double fourthDiv = (top/5) *2;
             double fifthDiv = (top/5) *1;
 
-            String firstAxisTitle = barGraphAxisStart + top + barGraphAxisEnd;
-            String secondAxisTitle = barGraphAxisStart + secondDiv + barGraphAxisEnd;
-            String thirdAxisTitle = barGraphAxisStart + thirdDiv + barGraphAxisEnd;
-            String fourthAxisTitle = barGraphAxisStart + fourthDiv + barGraphAxisEnd;
-            String fifthAxisTitle = barGraphAxisStart + fifthDiv + barGraphAxisEnd;
+            String firstAxisTitle = barGraphAxisStart + df.format(top) + barGraphAxisEnd;
+            String secondAxisTitle = barGraphAxisStart + df.format(secondDiv) + barGraphAxisEnd;
+            String thirdAxisTitle = barGraphAxisStart + df.format(thirdDiv)+ barGraphAxisEnd;
+            String fourthAxisTitle = barGraphAxisStart + df.format(fourthDiv)+ barGraphAxisEnd;
+            String fifthAxisTitle = barGraphAxisStart + df.format(fifthDiv)+ barGraphAxisEnd;
             String zeroAxis = barGraphAxisStart + "0" + barGraphAxisEnd + "</li>";
 
             total+=firstAxisTitle;

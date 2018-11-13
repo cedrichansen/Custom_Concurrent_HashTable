@@ -1,3 +1,5 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit"
-"CustomHashtableTests.Benchmark.testAddCustom","thrpt",4,5,3.722174,0.509485,"ops/ms"
-"CustomHashtableTests.Benchmark.testGetCustom","thrpt",4,5,4.373813,0.926625,"ops/ms"
+"CustomHashtableTests.Benchmark.testAddCustom","thrpt",4,5,4.041670,3.058896,"ops/ms"
+"CustomHashtableTests.Benchmark.testAddJDK","thrpt",4,5,7.921885,2.023929,"ops/ms"
+"CustomHashtableTests.Benchmark.testGetCustom","thrpt",4,5,4.264449,0.464093,"ops/ms"
+"CustomHashtableTests.Benchmark.testGetJdk","thrpt",4,5,4.724217,0.320526,"ops/ms"
