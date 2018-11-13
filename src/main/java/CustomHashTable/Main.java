@@ -56,7 +56,7 @@ public class Main {
         final Options options = new OptionsBuilder()
                 .include(Benchmark.class.getSimpleName())
                 .forks(1)
-                .threads(4)
+                .threads(Runtime.getRuntime().availableProcessors())
                 .warmupIterations(5)
                 .measurementIterations(5)
                 .resultFormat(ResultFormatType.CSV)
