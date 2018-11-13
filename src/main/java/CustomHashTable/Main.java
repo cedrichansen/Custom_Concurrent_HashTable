@@ -7,6 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import org.openjdk.jmh.annotations.Benchmark;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
@@ -29,6 +30,7 @@ public class Main {
 
     public static int NUMPRODUCTS = 16; //do not exceed 8000 (only 8000 items in total)
     static int NUMSELLERS = 2; //do not exceed 12 (only 12 stores listed in text file
+    static DecimalFormat df = new DecimalFormat("#.00");
 
     public static void main(String[] args) {
 
@@ -62,11 +64,11 @@ public class Main {
                 .build();
 
 
-//        try {
-//            new Runner(options).run();
-//        } catch (RunnerException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            new Runner(options).run();
+        } catch (RunnerException e) {
+            e.printStackTrace();
+        }
 
 
         writeHTMLFile();
@@ -170,7 +172,7 @@ public class Main {
 
 
             for (String l:lines) {
-                total += addBarToGraph(Double.parseDouble(l.split(",")[4]), l.split(",")[0], top);
+                total += addBarToGraph(Double.parseDouble(l.split(",")[4]), l.split(",")[0], top, Double.parseDouble(l.split(",")[5]));
             }
             total+= barGraphEnd;
             total +=end;
@@ -190,12 +192,13 @@ public class Main {
 
     }
 
-    static String addBarToGraph (double value, String name, double max) {
+    static String addBarToGraph (double value, String name, double max, double error) {
+
         String [] stuff = name.split("\\.");
         name = stuff[2].substring(0, stuff[2].length()-1);
         double perc = value/max;
         String firstLine= "<li class=\"bar primary\" style=\"height: " + perc*100 + "%;\" title =" + name + ">\n";
-        String secondLine = "<div class=\"percent\">" + value + "<span></span></div>\n";
+        String secondLine = "<div class=\"percent\">" + df.format(value) + "+/-"+  df.format(error)+"<span>ops/ms</span></div>\n";
         String thirdLine = "<div class=\"description\">" + name + "</div>\n" +
                 "        </li>";
 
