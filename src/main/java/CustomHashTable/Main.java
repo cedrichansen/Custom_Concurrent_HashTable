@@ -91,7 +91,7 @@ public class Main {
                 "</head>\n" +
                 "<body>\n" +
                 "\n" +
-                "<h1>title 1</h1>";
+                "<h1>Test Results</h1>";
 
         String end = "\n" +
                 "</body>\n" +
